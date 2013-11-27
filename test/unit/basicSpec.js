@@ -58,16 +58,17 @@ Lunar.module("anotherModule", function($) {
 /* global jQuery */
 }, jQuery);
 
-Lunar.takeOff();
-
 describe('Basic tests', function() {
 
 	it("Modules and instances of modules have both shared and independent state", function() {
-		var testModule = Lunar.module("test");
+		var lunar = Lunar.instance();
+		lunar.takeOff();
+
+		var testModule = lunar.module("test");
 		expect(testModule.doSomething()).toBe(42);
 		expect(testModule.doSomething()).toBe(43);
 
-		var instance = Lunar.instance("test");
+		var instance = lunar.instance("test");
 		expect(instance.doSomething()).toBe(44);
 		expect(instance.doSomething()).toBe(45);
 		expect(testModule.doSomething()).toBe(46);
@@ -81,19 +82,40 @@ describe('Basic tests', function() {
 	});
 
 	it("Instances of modules have independent state", function() {
-		var instance1 = Lunar.instance("test");
+		var lunar = Lunar.instance();
+		lunar.takeOff();
+
+		var instance1 = lunar.instance("test");
 		expect(instance1.doSomethingElse()).toBe(42);
 		expect(instance1.doSomethingElse()).toBe(43);
 
-		var instance2 = Lunar.instance("test");
+		var instance2 = lunar.instance("test");
 		expect(instance2.doSomethingElse()).toBe(42);
 		expect(instance2.doSomethingElse()).toBe(43);
 	});
 
 	it("Arguments to instance constructors", function() {
-		var instance1 = Lunar.instance("test", 10);
+		var lunar = Lunar.instance();
+		lunar.takeOff();
+
+		var instance1 = lunar.instance("test", 10);
 		expect(instance1.doSomethingElse()).toBe(52);
 		expect(instance1.doSomethingElse()).toBe(53);
+	});
+
+	it("Lunar instances are independent", function() {
+		var lunar = Lunar.instance();
+		lunar.takeOff();
+
+		/* First we ensure that the test module has been incremented */
+		var testModule = lunar.module("test");
+		testModule.doSomething();
+		expect(testModule.doSomething()).not.toBe(42);
+
+		var lunar2 = lunar.instance();
+		var testModule2 = lunar2.module("test");
+
+		expect(testModule2.doSomething()).toBe(42);
 	});
 
 });

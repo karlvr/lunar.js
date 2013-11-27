@@ -20,52 +20,103 @@
   */
 /*jslint white: true, unparam: true, vars: true */
 (function(window, undefined) {
-	var _modules = {};
-	
-	function module(name, func) {
-		if (typeof func === "function") {
-			var myArguments = Array.prototype.slice.call(arguments);
-			var funcArguments = myArguments.slice(2);
-			var module = func.apply(null, funcArguments);
-			_modules[name] = module;
-		} else {
-			return _modules[name];
+	window.Lunar = LunarFunc({});
+
+	function LunarFunc(moduleTemplates, autoTakeOff) {
+		var _modules = {};
+		var _moduleTemplates = moduleTemplates;
+		var _takenOff = false;
+		var _children = [];
+
+		/* Create initial modules */
+		for (var name in _moduleTemplates) {
+			_modules[name] = createModule(_moduleTemplates[name]);
 		}
-	}
 
-	function instance(name) {
-		var moduleObject = module(name);
-		var func = function() {};
-		func.prototype = moduleObject;
-		var result = new func();
+		function Lunar() {}
 
-		var myArguments = Array.prototype.slice.call(arguments);
-		var funcArguments = myArguments.slice(1);
-		result["$new"].apply(result, funcArguments);
+		Lunar.prototype = {};
 
-		return result;
-	}
-	
-	function takeOff() {
-		var modulesCopy = merge({}, _modules);
-		call("$takeOff", modulesCopy);
-	}
-	
-	function call(funcName) {
-		var myArguments = Array.prototype.slice.call(arguments);
-		var funcArguments = myArguments.slice(1);
+		Lunar.prototype.module = function(name, func) {
+			if (typeof func === "function") {
+				var myArguments = Array.prototype.slice.call(arguments);
+				var funcArguments = myArguments.slice(2);
 
-		var modulesCopy = merge({}, _modules);
-		var results = {};
-		for (var moduleName in modulesCopy) {
-			var module = _modules[moduleName];
-			if (typeof module[funcName] === "function") {
-				var result = module[funcName].apply(module, funcArguments);
-				results[moduleName] = result;
+				var template = {
+					func: func,
+					arguments: funcArguments
+				};
+
+				_moduleTemplates[name] = template;
+				_modules[name] = createModule(template);
+			} else {
+				return _modules[name];
 			}
 		}
-		return results;
-	}
+
+		function createModule(template) {
+			return template.func.apply(null, template.arguments);
+		}
+
+		Lunar.prototype.instance = function(name) {
+			if (typeof name === "string") {
+				/* Return a new instance of the named module */
+				var moduleObject = this.module(name);
+				var func = function() {};
+				func.prototype = moduleObject;
+				var result = new func();
+
+				var myArguments = Array.prototype.slice.call(arguments);
+				var funcArguments = myArguments.slice(1);
+				result["$new"].apply(result, funcArguments);
+
+				return result;
+			} else if (name === undefined || typeof name === "boolean") {
+				/* Return a new instance of Lunar */
+				var lunar = LunarFunc(_moduleTemplates, name !== undefined ? name : _takenOff);
+				_children.push(lunar);
+				return lunar;
+			} else {
+				throw exception("Invalid argument type to instance method: " + typeof name);
+			}
+		}
+		
+		Lunar.prototype.takeOff = function() {
+			if (_takenOff)
+				return false;
+
+			_takenOff = true;
+			var modulesCopy = merge({}, _modules);
+			this.call("$takeOff", modulesCopy);
+
+			for (var child in _children) {
+				child.takeOff();
+			}
+			return true;
+		}
+		
+		Lunar.prototype.call = function(funcName) {
+			var myArguments = Array.prototype.slice.call(arguments);
+			var funcArguments = myArguments.slice(1);
+
+			var modulesCopy = merge({}, _modules);
+			var results = {};
+			for (var moduleName in modulesCopy) {
+				var module = _modules[moduleName];
+				if (typeof module[funcName] === "function") {
+					var result = module[funcName].apply(module, funcArguments);
+					results[moduleName] = result;
+				}
+			}
+			return results;
+		}
+
+		var lunar = new Lunar();
+		if (autoTakeOff) {
+			lunar.takeOff();
+		}
+		return lunar;
+	};
 
 	/**
 	 * Merge objects passed as arguments. If the first parameter is a boolean that specifies whether to do a deep
@@ -127,11 +178,22 @@
 
 		return _merge.apply(this, arguments);
 	}
-	
-	var Lunar = window.Lunar = {
-		module: module,
-		instance: instance,
-		takeOff: takeOff,
-		call: call
+
+	/* Exceptions */
+
+	function exception(message) {
+		return new LunarException(message);
+	}
+
+	LunarException.prototype = new Object();
+
+	function LunarException(message) {
+		this.name = "LunarException";
+		this.message = message;
+	}
+
+	LunarException.prototype.toString = function() {
+		return "Lunar.js exception: " + this.message;
 	};
+/* global window */
 })(window);
