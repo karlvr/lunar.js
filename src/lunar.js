@@ -82,7 +82,16 @@
 				throw exception("Invalid argument type to instance() method: " + typeof name);
 			}
 		};
+
+		/** Returns a new instance of Lunar, with no modules and no connection to this instance of Lunar. 
+		 */
+		Lunar.prototype.blank = function() {
+			return LunarFunc({});
+		};
 		
+		/** Sends the takeOff message to all of the modules. If child Lunar instances haven't yet taken off,
+			takeOff will be called on them too.
+		 */
 		Lunar.prototype.takeOff = function() {
 			if (_takenOff)
 				return false;
