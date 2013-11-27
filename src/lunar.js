@@ -24,7 +24,7 @@
 	
 	function module(name, func) {
 		if (typeof func === "function") {
-			var myArguments = [].concat(arguments);
+			var myArguments = Array.prototype.slice.call(arguments);
 			var funcArguments = myArguments.slice(2);
 			var module = func.apply(null, funcArguments);
 			_modules[name] = module;
@@ -37,11 +37,22 @@
 	
 	function takeOff() {
 		var modulesCopy = merge({}, _modules);
-		for (var moduleName in modulesCopy) {
-			_modules[moduleName].$takeOff(modulesCopy);
-		}
+		call("$takeOff", modulesCopy);
 	}
 	
+	function call(funcName) {
+		var myArguments = Array.prototype.slice.call(arguments);
+		var funcArguments = myArguments.slice(1);
+
+		var modulesCopy = merge({}, _modules);
+		for (var moduleName in modulesCopy) {
+			var module = _modules[moduleName];
+			if (typeof module[funcName] === "function") {
+				module[funcName].apply(module, funcArguments);
+			}
+		}
+	}
+
 	/**
 	 * Merge objects passed as arguments. If the first parameter is a boolean that specifies whether to do a deep
 	 * copy.
@@ -105,6 +116,7 @@
 	
 	var Lunar = window.Lunar = {
 		module: module,
-		takeOff: takeOff
+		takeOff: takeOff,
+		call: call
 	};
 })(window);
