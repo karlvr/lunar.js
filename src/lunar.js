@@ -28,10 +28,8 @@
 			var funcArguments = myArguments.slice(2);
 			var module = func.apply(null, funcArguments);
 			_modules[name] = module;
-		} else if (typeof name === "string") {
-			return _modules[name];
 		} else {
-			return null;
+			return _modules[name];
 		}
 	}
 	
@@ -45,12 +43,15 @@
 		var funcArguments = myArguments.slice(1);
 
 		var modulesCopy = merge({}, _modules);
+		var results = {};
 		for (var moduleName in modulesCopy) {
 			var module = _modules[moduleName];
 			if (typeof module[funcName] === "function") {
-				module[funcName].apply(module, funcArguments);
+				var result = module[funcName].apply(module, funcArguments);
+				results[moduleName] = result;
 			}
 		}
+		return results;
 	}
 
 	/**
