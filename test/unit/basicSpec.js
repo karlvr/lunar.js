@@ -118,4 +118,12 @@ describe('Basic tests', function() {
 		expect(testModule2.doSomething()).toBe(42);
 	});
 
+	it("Lunar modules are properties", function() {
+		var lunar = Lunar.instance();
+		lunar.takeOff();
+
+		var testModule = lunar.test;
+		expect(testModule.doSomething()).toBe(42);
+	});
+
 });

@@ -28,11 +28,6 @@
 		var _takenOff = false;
 		var _children = [];
 
-		/* Create initial modules */
-		for (var name in _moduleTemplates) {
-			_modules[name] = createModule(_moduleTemplates[name]);
-		}
-
 		function Lunar() {}
 
 		Lunar.prototype = {};
@@ -48,7 +43,11 @@
 				};
 
 				_moduleTemplates[name] = template;
-				_modules[name] = createModule(template);
+				var module = createModule(template);
+				_modules[name] = module;
+				if (!reservedName(name)) {
+					this[name] = module;
+				}
 			} else if (typeof name === "string") {
 				return _modules[name];
 			} else {
@@ -58,6 +57,11 @@
 
 		function createModule(template) {
 			return template.func.apply(null, template.arguments);
+		}
+
+		function reservedName(name) {
+			return name === "module" || name === "instance" || name === "blank" || name === "takeOff" || name === "call" ||
+				name === "children";
 		}
 
 		Lunar.prototype.instance = function(name) {
@@ -130,6 +134,16 @@
 		};
 
 		var lunar = new Lunar();
+
+		/* Create initial modules */
+		for (var name in _moduleTemplates) {
+			var module = createModule(_moduleTemplates[name]);
+			_modules[name] = module;
+			if (!reservedName(name)) {
+				lunar[name] = module;
+			}
+		}
+
 		if (autoTakeOff) {
 			lunar.takeOff();
 		}
