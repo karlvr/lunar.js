@@ -54,7 +54,7 @@
 			} else {
 				throw exception("Invalid argument type to module() method: " + typeof name);
 			}
-		}
+		};
 
 		function createModule(template) {
 			return template.func.apply(null, template.arguments);
@@ -81,7 +81,7 @@
 			} else {
 				throw exception("Invalid argument type to instance() method: " + typeof name);
 			}
-		}
+		};
 		
 		Lunar.prototype.takeOff = function() {
 			if (_takenOff)
@@ -97,7 +97,7 @@
 				child.takeOff();
 			}
 			return true;
-		}
+		};
 		
 		Lunar.prototype.call = function(funcName) {
 			var myArguments = Array.prototype.slice.call(arguments);
@@ -113,12 +113,12 @@
 				}
 			}
 			return results;
-		}
+		};
 
 		Lunar.prototype.children = function() {
 			var childrenCopy = [].concat(_children);
 			return childrenCopy;
-		}
+		};
 
 		var lunar = new Lunar();
 		if (autoTakeOff) {
