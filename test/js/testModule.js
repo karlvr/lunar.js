@@ -7,6 +7,7 @@ Lunar.module("test", function($, undefined) {
 	var anotherModule;
  
 	// private scope
+	var iterator = 0;
  
 	// public module interface
 	var module = {};
@@ -14,10 +15,18 @@ Lunar.module("test", function($, undefined) {
 	module.$takeOff = function(modules) {
 		anotherModule = modules.anotherModule;
 	};
+
+	module.$new = function() {
+		this.iterator = 0;
+	};
  
 	// public interface
 	module.doSomething = function() {
-		return anotherModule.getSomething();
+		return anotherModule.getSomething() + iterator++;
+	};
+
+	module.doSomethingElse = function() {
+		return anotherModule.getSomething() + this.iterator++;
 	};
  
 	return module;

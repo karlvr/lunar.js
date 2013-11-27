@@ -9,6 +9,19 @@
 	Lunar.takeOff();
 
 	alert(Lunar.module("test").doSomething());
+
+	var t = Lunar.module("test", true);
+	alert(t.doSomething());
+
+	var v = Lunar.instance("test");
+	console.log(v);
+	console.log(v == t);
+	console.log(v.doSomething());
+	console.log(v.doSomething());
+	console.log(v.doSomethingElse());
+	console.log(v.doSomethingElse());
+	console.log(t.doSomething());
+	console.log(v.doSomething());
 	</script>
 </head>
 <body>

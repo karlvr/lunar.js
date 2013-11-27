@@ -32,6 +32,15 @@
 			return _modules[name];
 		}
 	}
+
+	function instance(name) {
+		var moduleObject = module(name);
+		var func = function() {};
+		func.prototype = moduleObject;
+		var result = new func();
+		result.$new();
+		return result;
+	}
 	
 	function takeOff() {
 		var modulesCopy = merge({}, _modules);
@@ -117,6 +126,7 @@
 	
 	var Lunar = window.Lunar = {
 		module: module,
+		instance: instance,
 		takeOff: takeOff,
 		call: call
 	};
