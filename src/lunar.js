@@ -86,10 +86,12 @@
 		Lunar.prototype.takeOff = function() {
 			if (_takenOff)
 				return false;
-
 			_takenOff = true;
+
+			var myArguments = Array.prototype.slice.call(arguments);
 			var modulesCopy = merge({}, _modules);
-			this.call("$takeOff", modulesCopy);
+			var funcArguments = ["$takeOff", modulesCopy].concat(myArguments);
+			this.call.apply(this, funcArguments);
 
 			for (var child in _children) {
 				child.takeOff();
