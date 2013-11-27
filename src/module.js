@@ -9,16 +9,16 @@ Lunar.module("myModule", function($, undefined) {
 	// private scope
 	var myPrivateVar;
  
-	// public module interface
 	var module = {};
 
+	// public module interface
 	module.$takeOff = function(modules) {
 		importedModule = modules.importedModule;
 		myPrivateVar = importedModule.getSomething();
 	};
  
 	// public interface
-	module.doSomething = function() {
+	module.next = function() {
 		importedModule.doSomethingElse(myPrivateVar);
 	};
  
