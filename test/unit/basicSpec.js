@@ -43,10 +43,6 @@ Lunar.module("anotherModule", function($) {
  
 	// public module interface
 	var module = {};
-
-	module.$takeOff = function(modules) {
-		
-	};
  
 	// public interface
 	module.getSomething = function() {
