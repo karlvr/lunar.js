@@ -48,6 +48,7 @@
 				if (!reservedName(name)) {
 					this[name] = module;
 				}
+				return module;
 			} else if (typeof name === "string") {
 				return _modules[name];
 			} else {
@@ -148,7 +149,7 @@
 			lunar.takeOff();
 		}
 		return lunar;
-	};
+	}
 
 	/**
 	 * Merge objects passed as arguments. If the first parameter is a boolean that specifies whether to do a deep
