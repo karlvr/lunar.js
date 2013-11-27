@@ -38,7 +38,7 @@
 		Lunar.prototype = {};
 
 		Lunar.prototype.module = function(name, func) {
-			if (typeof func === "function") {
+			if (typeof name === "string" && typeof func === "function") {
 				var myArguments = Array.prototype.slice.call(arguments);
 				var funcArguments = myArguments.slice(2);
 
@@ -49,8 +49,10 @@
 
 				_moduleTemplates[name] = template;
 				_modules[name] = createModule(template);
-			} else {
+			} else if (typeof name === "string") {
 				return _modules[name];
+			} else {
+				throw exception("Invalid argument type to module() method: " + typeof name);
 			}
 		}
 
@@ -77,7 +79,7 @@
 				_children.push(lunar);
 				return lunar;
 			} else {
-				throw exception("Invalid argument type to instance method: " + typeof name);
+				throw exception("Invalid argument type to instance() method: " + typeof name);
 			}
 		}
 		
