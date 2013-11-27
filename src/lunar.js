@@ -38,7 +38,11 @@
 		var func = function() {};
 		func.prototype = moduleObject;
 		var result = new func();
-		result.$new();
+
+		var myArguments = Array.prototype.slice.call(arguments);
+		var funcArguments = myArguments.slice(1);
+		result["$new"].apply(result, funcArguments);
+
 		return result;
 	}
 	

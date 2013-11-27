@@ -16,8 +16,8 @@ Lunar.module("test", function($, undefined) {
 		anotherModule = modules.anotherModule;
 	};
 
-	module.$new = function() {
-		this.iterator = 0;
+	module.$new = function(initialValue) {
+		this.iterator = initialValue !== undefined ? initialValue : 0;
 	};
  
 	// public interface
@@ -62,7 +62,7 @@ Lunar.takeOff();
 
 describe('Basic tests', function() {
 
-	it("Substitution", function() {
+	it("Modules and instances of modules have both shared and independent state", function() {
 		var testModule = Lunar.module("test");
 		expect(testModule.doSomething()).toBe(42);
 		expect(testModule.doSomething()).toBe(43);
@@ -78,6 +78,22 @@ describe('Basic tests', function() {
 		expect(instance.doSomething()).toBe(47);
 		expect(testModule.doSomething()).toBe(48);
 
+	});
+
+	it("Instances of modules have independent state", function() {
+		var instance1 = Lunar.instance("test");
+		expect(instance1.doSomethingElse()).toBe(42);
+		expect(instance1.doSomethingElse()).toBe(43);
+
+		var instance2 = Lunar.instance("test");
+		expect(instance2.doSomethingElse()).toBe(42);
+		expect(instance2.doSomethingElse()).toBe(43);
+	});
+
+	it("Arguments to instance constructors", function() {
+		var instance1 = Lunar.instance("test", 10);
+		expect(instance1.doSomethingElse()).toBe(52);
+		expect(instance1.doSomethingElse()).toBe(53);
 	});
 
 });

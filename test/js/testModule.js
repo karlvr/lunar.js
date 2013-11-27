@@ -16,8 +16,8 @@ Lunar.module("test", function($, undefined) {
 		anotherModule = modules.anotherModule;
 	};
 
-	module.$new = function() {
-		this.iterator = 0;
+	module.$new = function(initialValue) {
+		this.iterator = initialValue !== undefined ? initialValue : 0;
 	};
  
 	// public interface
