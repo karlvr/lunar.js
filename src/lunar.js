@@ -115,6 +115,11 @@
 			return results;
 		}
 
+		Lunar.prototype.children = function() {
+			var childrenCopy = [].concat(_children);
+			return childrenCopy;
+		}
+
 		var lunar = new Lunar();
 		if (autoTakeOff) {
 			lunar.takeOff();
