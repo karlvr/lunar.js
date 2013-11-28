@@ -122,6 +122,8 @@ context.send("anotherEvent", 6);
 
 Sending messages using `context.send` is a great way to decouple modules from each other. A module can send a message without knowing which module, or modules, will receive it and act upon it.
 
+NB. `context.send` does not send messages to module instances. If you want to pass messages to instances, you should store the instances in a module variable from the `$new` function, and pass the message to those instances yourself when the message is received by the module.
+
 ## Declaring modules
 
 You declare modules using the `Lunar.module` function. You can pass additional function arguments to that function to pass those into your module when it is created.
