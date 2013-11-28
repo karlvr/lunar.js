@@ -1,8 +1,6 @@
 'use strict';
 
-Lunar.module("test", function($, undefined) {
-	"use strict";
-	 
+Lunar.module("test", function() {
 	// imports
 	var anotherModule;
  
@@ -30,14 +28,9 @@ Lunar.module("test", function($, undefined) {
 	};
  
 	return module;
-/* global jQuery */
-}, jQuery);
+});
 
-/*jslint white: true, unparam: true, vars: true */
-
-Lunar.module("anotherModule", function($) {
-	"use strict";
-	 
+Lunar.module("anotherModule", function() {
 	// private scope
 	var myPrivateVar;
  
@@ -50,9 +43,7 @@ Lunar.module("anotherModule", function($) {
 	};
  
 	return module;
-	
-/* global jQuery */
-}, jQuery);
+});
 
 describe('Basic tests', function() {
 
