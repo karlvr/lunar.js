@@ -1,6 +1,6 @@
 # Lunar.js
 
-Lunar.js is a simple module pattern helper. The module pattern provides separation of scopes and a pattern for explicit coupling between modules using imports. Lunar supports using modules as singletons or as module instances, as well as supporting multiple instances of Lunar itself.
+Lunar.js is a simple Javascript module-pattern helper. The module pattern provides separation of scopes and a pattern for explicit coupling between modules using imports. Lunar supports modules as singletons or as instances, as well as creating multiple independent module contexts.
 
 ## Examples
 
@@ -24,20 +24,17 @@ Lunar.module("myModule", function() {
 
 And now use that module:
 ```javascript
-var myModule = Lunar.myModule;
+var context = Lunar.context();
+var myModule = context.myModule;
 console.log(myModule.next()); // 0
 console.log(myModule.next()); // 1
 ```
 
-Note that the module is a singleton module, so if you access it again you get the same instance:
-```
-var myModuleAgain = Lunar.myModule;
-console.log(myModuleAgain.next()); // 2
-```
+Note that modules accessed like this are singletons. The `Lunar` object is also a singleton, which acts as a factory creating contexts populated with modules. If you create multiple contexts using `Lunar.instance()` they will be independent.
 
 ### Multiple modules
 
-Applications are generally made up of lots of different interacting modules. If it is clear how modules interact it makes it easier to understand a complex application. Lunar lets you follow a pattern of explicitly importing modules, so you can see the dependencies at a glance.
+Applications are generally made up of lots of different interacting modules. If it is clear how modules interact it is easier to understand a complex application. Lunar provides an explicit module importing pattern, so you can see the dependencies at a glance.
 
 ```javascript
 Lunar.module("moduleA", function() {
@@ -50,8 +47,8 @@ Lunar.module("moduleA", function() {
 	// public interface
 	var module = {};
 
-	module.$init = function(modules) {
-		moduleB = modules.moduleB;
+	module.$init = function(context) {
+		moduleB = context.moduleB;
 	};
 
 	module.next = function() {
@@ -73,12 +70,12 @@ Lunar.module("moduleB", function() {
 });
 ```
 
-You can declare these modules in any order. The imports are created when you tell Lunar to `init`.
+You can declare these modules in any order. The imports are created when the context is created.
 
 ```javascript
-Lunar.init();
+var context = Lunar.context();
 
-var moduleA = Lunar.moduleA;
+var moduleA = context.moduleA;
 console.log(moduleA.next()); // 42
 console.log(moduleA.next()); // 43
 ```
@@ -97,22 +94,30 @@ Lunar.module("moduleC", function() {
 		counter++;
 	};
 
+	module.anotherEvent = function(value) {
+		counter += value;
+	}
+
 	module.getCount = function() {
 		return counter;
 	};
 
 	return module;
 });
+```
 
-console.log(Lunar.moduleC.getCount()); // 0
-Lunar.call("myEvent");
-console.log(Lunar.moduleC.getCount()); // 1
+```javascript
+var context = Lunar.context();
+
+console.log(context.moduleC.getCount()); // 0
+context.call("myEvent");
+console.log(context.moduleC.getCount()); // 1
 ```
 
 You can also pass arguments to the event functions:
 
 ```javascript
-Lunar.call("myEvent", 6);
+context.call("anotherEvent", 6);
 ```
 
 ## Declaring modules
@@ -120,14 +125,14 @@ Lunar.call("myEvent", 6);
 You declare modules using the `Lunar.module` function. You can pass additional function arguments to that function to pass those into your module when it is created.
 
 ```javascript
-Lunar.module("moduleD", function($, undefined) {
+Lunar.module("moduleD", function($) {
 	
 }, jQuery);
 ```
 
 ## Instances of modules
 
-Often modules are singletons, but sometimes you want to have multiple instances of a module. Lunar provides the `Lunar.instance` function to create instances of modules. Module instances can share state with their singleton counterparts by using the private variables declared in the module declaration function. Module instances can have private state by using instance variables, e.g. `this.value = 7;`.
+Often modules are singletons, but sometimes you want to have multiple instances of a module. Lunar provides the `context.instance` function to create instances of modules. Module instances share state with their singleton counterparts by using the private variables declared in the module declaration function. Module instances have private state using instance variables, e.g. `this.value = 7;`.
 
 Modules that support instances must declare a `$new` function.
 
@@ -156,32 +161,27 @@ Lunar.module("classModule", function() {
 ```
 
 ```javascript
-Lunar.classModule.nextShared(); // 0
-Lunar.classModule.nextShared(); // 1
+var context = Lunar.context();
+context.classModule.nextShared(); // 0
+context.classModule.nextShared(); // 1
 
-var instance = Lunar.instance("classModule");
+var instance = context.instance("classModule");
 instance.nextShared(); // 2, as the state is shared with the singleton module
 instance.next(); // 0, as this is the private instance state
 instance.next(); // 1
 
-var anotherInstance = Lunar.instance("classModule");
+var anotherInstance = context.instance("classModule");
 anotherInstance.nextShared(); // 3, as the state is shared
 anotherInstance.next(); // 0, as this is the private instance state
 ```
 
-## Instances of Lunar
+## Lunar contexts
 
-Sometimes you want to have multiple collections of modules that are independent of each other. By default, Lunar creates a global shared collection of modules and stores it in the global `Lunar` variable. That is what we have been accessing elsewhere in this documentation. Lunar also supports creating multiple instances of itself, either derived from a parent instance or a blank slate.
-
-To create a new instance of Lunar we use the `Lunar.instance` function without any arguments:
+Sometimes you want to have multiple collections of modules that are independent of each other. Usually you create a single context and use that as a global variable in your application. However, Lunar also supports creating multiple independent contexts.
 
 ```javascript
-var lunar1 = Lunar.instance();
-var lunar2 = Lunar.instance();
+var context1 = Lunar.context();
+var context2 = Lunar.context();
 ```
 
-The same modules exist in both Lunar instances but they are completely independent, with no shared state. So you can access singleton modules in each Lunar instance.
-
-## Initialising Lunar modules
-
-
+The same modules exist in both Lunar contexts but they are completely independent, with no shared state.
