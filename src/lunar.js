@@ -51,7 +51,7 @@
 		};
 
 		function reservedName(name) {
-			return name === "instance" || name === "call";
+			return name === "instance" || name === "send";
 		}
 
 		LunarControl.prototype.context = function() {
@@ -104,7 +104,7 @@
 			}
 		};
 
-		LunarInstance.prototype.call = function(funcName) {
+		LunarInstance.prototype.send = function(funcName) {
 			if (typeof funcName === "string") {
 				var myArguments = Array.prototype.slice.call(arguments);
 				var funcArguments = myArguments.slice(1);
@@ -116,7 +116,7 @@
 					}
 				}
 			} else {
-				throw exception("Invalid argument type to call(funcName) method: " + typeof name);
+				throw exception("Invalid argument type to send(funcName) method: " + typeof name);
 			}
 		};
 
@@ -134,7 +134,7 @@
 		}
 
 		/* Call init */
-		lunar.call("$init", lunar);
+		lunar.send("$init", lunar);
 		return lunar;
 	}
 

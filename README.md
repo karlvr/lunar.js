@@ -82,7 +82,7 @@ console.log(moduleA.next()); // 43
 
 ## Messages and events
 
-You can send messages and events to Lunar modules using the `call` method. Any module that has declared a function with the given name will have that function called.
+You can send messages and events to Lunar modules using the `send` method. Any module that has declared a function with the given name will have that function called.
 
 ```javascript
 Lunar.module("moduleC", function() {
@@ -110,15 +110,17 @@ Lunar.module("moduleC", function() {
 var context = Lunar.context();
 
 console.log(context.moduleC.getCount()); // 0
-context.call("myEvent");
+context.send("myEvent");
 console.log(context.moduleC.getCount()); // 1
 ```
 
 You can also pass arguments to the event functions:
 
 ```javascript
-context.call("anotherEvent", 6);
+context.send("anotherEvent", 6);
 ```
+
+Sending messages using `context.send` is a great way to decouple modules from each other. A module can send a message without knowing which module, or modules, will receive it and act upon it.
 
 ## Declaring modules
 
