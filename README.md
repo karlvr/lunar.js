@@ -194,6 +194,10 @@ var namedContext = Lunar.context("my context");
 var anotherContext = Lunar.context("other context");
 ```
 
-You can also create anonymous contexts by passing an empty string as the name for the context.
+You can also create anonymous contexts by passing an empty string as the name for the context. Note for experts: Lunar doesn't retain any references to anonymous contexts so they will be garbage collected when you've finished using them, whereas named contexts and the default context are retained.
+
+```javascript
+var anonymousContext = Lunar.context("");
+```
 
 All of the different contexts created are independent. The same modules exist in all of the contexts but they are completely independent, with no shared state.
