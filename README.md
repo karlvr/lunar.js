@@ -30,7 +30,7 @@ console.log(myModule.next()); // 0
 console.log(myModule.next()); // 1
 ```
 
-Note that modules accessed like this are singletons. The `Lunar` object is also a singleton, which acts as a factory creating contexts populated with modules. If you create multiple contexts using `Lunar.instance()` they will be independent.
+The `Lunar` object is global, and acts as a factory creating contexts populated with modules.
 
 ### Multiple modules
 
@@ -181,11 +181,19 @@ anotherInstance.next(); // 0, as this is the private instance state
 
 ## Lunar contexts
 
-Sometimes you want to have multiple collections of modules that are independent of each other. Usually you create a single context and use that as a global variable in your application. However, Lunar also supports creating multiple independent contexts.
+Calling `Lunar.context()` returns the default context.
 
 ```javascript
-var context1 = Lunar.context();
-var context2 = Lunar.context();
+var defaultContext = Lunar.context();
 ```
 
-The same modules exist in both Lunar contexts but they are completely independent, with no shared state.
+You can create additional context by passing a name for the context. Calling `Lunar.context` again with the same context name will return the same context object.
+
+```javascript
+var namedContext = Lunar.context("my context");
+var anotherContext = Lunar.context("other context");
+```
+
+You can also create anonymous contexts by passing an empty string as the name for the context.
+
+All of the different contexts created are independent. The same modules exist in all of the contexts but they are completely independent, with no shared state.

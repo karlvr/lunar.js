@@ -49,7 +49,7 @@ myLunar.module("sendTest2", function() {
 describe('Send tests', function() {
 
 	it("Send messages", function() {
-		var context = myLunar.context();
+		var context = myLunar.context("");
 
 		context.send("addOne");
 

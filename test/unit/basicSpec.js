@@ -48,7 +48,7 @@ Lunar.module("anotherModule", function() {
 describe('Basic tests', function() {
 
 	it("Modules and instances of modules have both shared and independent state", function() {
-		var context = Lunar.context();
+		var context = Lunar.context("");
 
 		var testModule = context.test;
 		expect(testModule.doSomething()).toBe(42);
@@ -68,7 +68,7 @@ describe('Basic tests', function() {
 	});
 
 	it("Instances of modules have independent state", function() {
-		var context = Lunar.context();
+		var context = Lunar.context("");
 
 		var instance1 = context.instance("test");
 		expect(instance1.doSomethingElse()).toBe(42);
@@ -80,7 +80,7 @@ describe('Basic tests', function() {
 	});
 
 	it("Arguments to instance constructors", function() {
-		var context = Lunar.context();
+		var context = Lunar.context("");
 
 		var instance1 = context.instance("test", 10);
 		expect(instance1.doSomethingElse()).toBe(52);
@@ -88,21 +88,21 @@ describe('Basic tests', function() {
 	});
 
 	it("Lunar instances are independent", function() {
-		var context = Lunar.context();
+		var context = Lunar.context("context 1");
 
 		/* First we ensure that the test module has been incremented */
 		var testModule = context.test;
 		testModule.doSomething();
 		expect(testModule.doSomething()).not.toBe(42);
 
-		var context2 = Lunar.context();
+		var context2 = Lunar.context("context 2");
 		var testModule2 = context2.test;
 
 		expect(testModule2.doSomething()).toBe(42);
 	});
 
 	it("Lunar modules are properties", function() {
-		var context = Lunar.context();
+		var context = Lunar.context("");
 
 		var testModule = context.test;
 		expect(testModule.doSomething()).toBe(42);

@@ -24,7 +24,8 @@
 
 	function makeLunarControl() {
 		var _moduleTemplates = {};
-		var _contexts = [];
+		var _contexts = {};
+		var _defaultContext;
 
 		function LunarControl() {}
 
@@ -46,7 +47,7 @@
 
 				_moduleTemplates[name] = template;
 			} else {
-				throw exception("Invalid arguments to module(name, func) method: " + typeof name + ", " + typeof func);
+				throw exception("Invalid arguments to module(name, func): " + typeof name + ", " + typeof func);
 			}
 		};
 
@@ -54,34 +55,52 @@
 			return name === "instance" || name === "send";
 		}
 
-		LunarControl.prototype.context = function() {
-			var lunar = makeLunarInstance(_moduleTemplates);
-			_contexts.push(lunar);
-			return lunar;
+		LunarControl.prototype.context = function(name) {
+			if (name === undefined) {
+				/* Default context */
+				if (_defaultContext === undefined) {
+					_defaultContext = makeLunarContext(_moduleTemplates);
+				}
+				return _defaultContext;
+			}
+
+			if (typeof name === "string") {
+				if (name === "") {
+					/* Anonymous context */
+					return makeLunarContext(_moduleTemplates);
+				} else {
+					/* Named context */
+					var existing = _contexts[name];
+					if (existing !== undefined) {
+						return existing;
+					}
+
+					var context = makeLunarContext(_moduleTemplates);
+					_contexts[name] = context;
+					return context;
+				}
+			} else {
+				throw exception("Invalid argument to context(name): " + typeof name);
+			}
 		};
 
-		/** Returns a new instance of Lunar, with no modules and no connection to this instance of Lunar. 
+		/** Returns a new instance of LunarControl, with no modules and no connection to this instance. 
 		 */
 		LunarControl.prototype.blank = function() {
 			return makeLunarControl();
 		};
 
-		LunarControl.prototype.contexts = function() {
-			var contextsCopy = [].concat(_contexts);
-			return contextsCopy;
-		};
-
 		return new LunarControl();
 	}
 
-	function makeLunarInstance(moduleTemplates) {
+	function makeLunarContext(moduleTemplates) {
 		var _modules = {};
 
-		function LunarInstance() {}
+		function LunarContext() {}
 
-		LunarInstance.prototype = {};
+		LunarContext.prototype = {};
 
-		LunarInstance.prototype.instance = function(moduleName) {
+		LunarContext.prototype.instance = function(moduleName) {
 			if (typeof moduleName === "string") {
 				/* Return a new instance of the named module */
 				var moduleObject = _modules[moduleName];
@@ -100,11 +119,11 @@
 
 				return result;
 			} else {
-				throw exception("Invalid argument type to instance(moduleName) method: " + typeof name);
+				throw exception("Invalid argument type to instance(moduleName): " + typeof name);
 			}
 		};
 
-		LunarInstance.prototype.send = function(funcName) {
+		LunarContext.prototype.send = function(funcName) {
 			if (typeof funcName === "string") {
 				var myArguments = Array.prototype.slice.call(arguments);
 				var funcArguments = myArguments.slice(1);
@@ -116,7 +135,7 @@
 					}
 				}
 			} else {
-				throw exception("Invalid argument type to send(funcName) method: " + typeof name);
+				throw exception("Invalid argument type to send(funcName): " + typeof name);
 			}
 		};
 
@@ -124,7 +143,7 @@
 			return template.func.apply(null, template.arguments);
 		}
 
-		var lunar = new LunarInstance();
+		var lunar = new LunarContext();
 
 		/* Create modules */
 		for (var name in moduleTemplates) {
