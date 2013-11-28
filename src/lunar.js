@@ -85,8 +85,13 @@
 			if (typeof moduleName === "string") {
 				/* Return a new instance of the named module */
 				var moduleObject = _modules[moduleName];
+				if (!moduleObject) {
+					throw exception("Module not declared in this context: " + moduleName);
+				}
+
 				var func = function() {};
 				func.prototype = moduleObject;
+
 				var result = new func();
 
 				var myArguments = Array.prototype.slice.call(arguments);
@@ -100,18 +105,19 @@
 		};
 
 		LunarInstance.prototype.call = function(funcName) {
-			var myArguments = Array.prototype.slice.call(arguments);
-			var funcArguments = myArguments.slice(1);
+			if (typeof funcName === "string") {
+				var myArguments = Array.prototype.slice.call(arguments);
+				var funcArguments = myArguments.slice(1);
 
-			var results = {};
-			for (var moduleName in _modules) {
-				var module = _modules[moduleName];
-				if (typeof module[funcName] === "function") {
-					var result = module[funcName].apply(module, funcArguments);
-					results[moduleName] = result;
+				for (var moduleName in _modules) {
+					var module = _modules[moduleName];
+					if (typeof module[funcName] === "function") {
+						module[funcName].apply(module, funcArguments);
+					}
 				}
+			} else {
+				throw exception("Invalid argument type to call(funcName) method: " + typeof name);
 			}
-			return results;
 		};
 
 		function createModule(template) {
