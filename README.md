@@ -50,7 +50,7 @@ Lunar.module("moduleA", function() {
 	// public interface
 	var module = {};
 
-	module.$takeOff = function(modules) {
+	module.$init = function(modules) {
 		moduleB = modules.moduleB;
 	};
 
@@ -73,10 +73,10 @@ Lunar.module("moduleB", function() {
 });
 ```
 
-You can declare these modules in any order. The imports are created when you tell Lunar to `takeOff`.
+You can declare these modules in any order. The imports are created when you tell Lunar to `init`.
 
 ```javascript
-Lunar.takeOff();
+Lunar.init();
 
 var moduleA = Lunar.moduleA;
 console.log(moduleA.next()); // 42
@@ -136,7 +136,7 @@ Lunar.module("classModule", function() {
 	// shared state
 	var sharedIterator = 0;
 
-	// public interfact
+	// public interface
 	var module = {};
 
 	module.$new = function() {
@@ -182,5 +182,6 @@ var lunar2 = Lunar.instance();
 
 The same modules exist in both Lunar instances but they are completely independent, with no shared state. So you can access singleton modules in each Lunar instance.
 
-## Take off
+## Initialising Lunar modules
+
 

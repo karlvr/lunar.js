@@ -9,7 +9,7 @@ Lunar.module("anotherModule", function($) {
 	// public module interface
 	var module = {};
 
-	module.$takeOff = function(modules) {
+	module.$init = function(modules) {
 		
 	};
  

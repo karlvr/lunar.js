@@ -12,7 +12,7 @@ Lunar.module("test", function($, undefined) {
 	// public module interface
 	var module = {};
 
-	module.$takeOff = function(modules) {
+	module.$init = function(modules) {
 		anotherModule = modules.anotherModule;
 	};
 

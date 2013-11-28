@@ -22,10 +22,10 @@
 (function(window, undefined) {
 	window.Lunar = LunarFunc({});
 
-	function LunarFunc(moduleTemplates, autoTakeOff) {
+	function LunarFunc(moduleTemplates, autoInit) {
 		var _modules = {};
 		var _moduleTemplates = moduleTemplates;
-		var _takenOff = false;
+		var _initted = false;
 		var _children = [];
 
 		function Lunar() {}
@@ -61,7 +61,7 @@
 		}
 
 		function reservedName(name) {
-			return name === "module" || name === "instance" || name === "blank" || name === "takeOff" || name === "call" ||
+			return name === "module" || name === "instance" || name === "blank" || name === "init" || name === "call" ||
 				name === "children";
 		}
 
@@ -94,21 +94,21 @@
 			return LunarFunc({});
 		};
 		
-		/** Sends the takeOff message to all of the modules. If child Lunar instances haven't yet taken off,
-			takeOff will be called on them too.
+		/** Sends the init message to all of the modules. If child Lunar instances haven't yet initted,
+			init will be called on them too.
 		 */
-		Lunar.prototype.takeOff = function() {
-			if (_takenOff)
+		Lunar.prototype.init = function() {
+			if (_initted)
 				return false;
-			_takenOff = true;
+			_initted = true;
 
 			var myArguments = Array.prototype.slice.call(arguments);
 			var modulesCopy = merge({}, _modules);
-			var funcArguments = ["$takeOff", modulesCopy].concat(myArguments);
+			var funcArguments = ["$init", modulesCopy].concat(myArguments);
 			this.call.apply(this, funcArguments);
 
 			for (var child in _children) {
-				child.takeOff();
+				child.init.apply(child, myArguments);
 			}
 			return true;
 		};
@@ -145,8 +145,8 @@
 			}
 		}
 
-		if (autoTakeOff) {
-			lunar.takeOff();
+		if (autoInit) {
+			lunar.init();
 		}
 		return lunar;
 	}
