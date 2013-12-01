@@ -119,7 +119,7 @@
 				// _instances[moduleName] = result;
 				return result;
 			} else {
-				throw exception("Invalid argument type to instance(moduleName): " + typeof name);
+				throw exception("Invalid argument type to instance(moduleName): " + typeof moduleName);
 			}
 		};
 
@@ -147,7 +147,7 @@
 					// }
 				}
 			} else {
-				throw exception("Invalid argument type to send(funcName): " + typeof name);
+				throw exception("Invalid argument type to send(funcName): " + typeof funcName);
 			}
 		};
 
