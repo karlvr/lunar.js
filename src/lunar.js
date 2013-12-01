@@ -95,7 +95,6 @@
 
 	function makeLunarContext(moduleTemplates) {
 		var _modules = {};
-		// var _instances = {};
 
 		function LunarContext() {}
 
@@ -109,14 +108,15 @@
 					throw exception("Module not declared in this context: " + moduleName);
 				}
 
+				var func = function() {};
+				func.prototype = moduleObject;
+
+				var result = new func();
+
 				var myArguments = Array.prototype.slice.call(arguments);
 				var funcArguments = myArguments.slice(1);
+				result["$new"].apply(result, funcArguments);
 
-				var result = moduleObject["$instance"].apply(moduleObject, funcArguments);
-				// if (_instances[moduleName] === null) {
-				// 	_instances[moduleName] = [];
-				// }
-				// _instances[moduleName] = result;
 				return result;
 			} else {
 				throw exception("Invalid argument type to instance(moduleName): " + typeof moduleName);
@@ -133,18 +133,6 @@
 					if (typeof module[funcName] === "function") {
 						module[funcName].apply(module, funcArguments);
 					}
-
-					// var instances = _instances[moduleName];
-					// if (instances) {
-					// 	var n = instances.length;
-					// 	for (var i = 0; i < n; i++) {
-					// 		var instance = instances[i];
-					// 		 Note that instances are not currently necessarily homogeneous so we can't just check this once 
-					// 		if (typeof instance[funcName] === "function") {
-					// 			instance[funcName].apply(instance, funcArguments);
-					// 		}
-					// 	}
-					// }
 				}
 			} else {
 				throw exception("Invalid argument type to send(funcName): " + typeof funcName);
