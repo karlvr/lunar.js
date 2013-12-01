@@ -133,6 +133,18 @@
 					if (typeof module[funcName] === "function") {
 						module[funcName].apply(module, funcArguments);
 					}
+
+					// var instances = _instances[moduleName];
+					// if (instances) {
+					// 	var n = instances.length;
+					// 	for (var i = 0; i < n; i++) {
+					// 		var instance = instances[i];
+					// 		 Note that instances are not currently necessarily homogeneous so we can't just check this once 
+					// 		if (typeof instance[funcName] === "function") {
+					// 			instance[funcName].apply(instance, funcArguments);
+					// 		}
+					// 	}
+					// }
 				}
 			} else {
 				throw exception("Invalid argument type to send(funcName): " + typeof name);
