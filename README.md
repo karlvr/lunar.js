@@ -70,7 +70,7 @@ Lunar.module("moduleB", function() {
 });
 ```
 
-You can declare these modules in any order. The imports are created when the context is created.
+You can declare these modules in any order. When the context is created, the `$init` function is called, passing in the context, allowing each module to get a reference to the context and to other modules it wants to call explicitly.
 
 ```javascript
 var context = Lunar.context();
@@ -120,9 +120,31 @@ You can also pass arguments to the event functions:
 context.send("anotherEvent", 6);
 ```
 
-Sending messages using `context.send` is a great way to decouple modules from each other. A module can send a message without knowing which module, or modules, will receive it and act upon it.
+### Modules sending messages
 
-NB. `context.send` does not send messages to module instances. If you want to pass messages to instances, you should store the instances in a module variable from the `$new` function, and pass the message to those instances yourself when the message is received by the module.
+Modules can also send messages, rather than explicitly calling functions on other modules. This results in a loosely couple solution; a module can send a message without knowing which module, or modules, will receive it and act upon it. Delightful.
+
+The module gets the reference to the context in the `$init` function, which is called automatically when the context is created.
+
+```javascript
+Lunar.module("myModule", function() {
+	var context;
+
+	var module = {};
+
+	module.$init = function(theContext) {
+		context = theContext;
+	};
+
+	module.handleSomething = function() {
+		context.send("handleSomethingElse");
+	};
+
+	return module;
+});
+```
+
+NB. `context.send` does not send messages to module _instances_. If you want to pass messages to instances, you should store the instances created in a variable in your module, and pass the message to those instances yourself when the message is received by the module.
 
 ## Declaring modules
 
@@ -133,6 +155,10 @@ Lunar.module("moduleD", function($) {
 	
 }, jQuery);
 ```
+
+## Initialising modules
+
+Whenever a Lunar context is created, by calling `Lunar.context()` (or see below for more options), the modules are sent the `$init` message, effectively calling the function named `$init` if there is one. The context is passed as an argument. This enables the context to get references to other modules in the context, or to store a reference to the context itself.
 
 ## Instances of modules
 
@@ -181,13 +207,13 @@ anotherInstance.next(); // 0, as this is the private instance state
 
 ## Lunar contexts
 
-Calling `Lunar.context()` returns the default context.
+Calling `Lunar.context()` returns the default context. The default context is the most commonly used.
 
 ```javascript
 var defaultContext = Lunar.context();
 ```
 
-You can create additional context by passing a name for the context. Calling `Lunar.context` again with the same context name will return the same context object.
+You can create additional named contexts by passing a name argument. This created a named context, so calling `Lunar.context(name)` again with the same name will return the same context object.
 
 ```javascript
 var namedContext = Lunar.context("my context");
@@ -200,4 +226,4 @@ You can also create anonymous contexts by passing an empty string as the name fo
 var anonymousContext = Lunar.context("");
 ```
 
-All of the different contexts created are independent. The same modules exist in all of the contexts but they are completely independent, with no shared state.
+All of the different contexts created are independent. The same modules exist in all of the contexts but they are independent as they are different objects.
